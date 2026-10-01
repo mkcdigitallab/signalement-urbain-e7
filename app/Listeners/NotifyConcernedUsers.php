@@ -7,9 +7,15 @@ namespace App\Listeners;
 use App\Events\ReportStatusChanged;
 use App\Models\Notification;
 use App\Models\Report;
+use App\Services\Notifications\NotificationEventKey;
 
 final class NotifyConcernedUsers
 {
+    public function __construct(
+        private readonly NotificationEventKey $eventKey,
+    ) {
+    }
+
     public function handle(ReportStatusChanged $event): void
     {
         $report = Report::query()
@@ -20,7 +26,7 @@ final class NotifyConcernedUsers
             Notification::query()->firstOrCreate(
                 [
                     'user_id' => $recipientId,
-                    'event_key' => $this->eventKey($event),
+                    'event_key' => $this->eventKey->forStatusChange($event),
                 ],
                 [
                     'notifiable_type' => Report::class,
@@ -36,15 +42,6 @@ final class NotifyConcernedUsers
         }
     }
 
-    private function eventKey(ReportStatusChanged $event): string
-    {
-        return sprintf(
-            'report-status:%s:%s:%s',
-            $event->reportId,
-            $event->previousStatus,
-            $event->newStatus,
-        );
-    }
 
     /**
      * @return list<string>
