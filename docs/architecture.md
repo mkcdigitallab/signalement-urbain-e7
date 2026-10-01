@@ -13,7 +13,7 @@ ReportStatusChanged
 NotifyConcernedUsers
     │
     ├── recipient resolution
-    └── Notification::firstOrCreate()
+    └── Notification::firstOrCreate() with a deterministic event key
 ```
 
 Media follows a separate infrastructure boundary:
@@ -54,7 +54,7 @@ The event implements `ShouldDispatchAfterCommit`. Notification work therefore ca
 
 ### Idempotency
 
-Recipients are persisted with `firstOrCreate`, so repeated delivery of the same status event does not intentionally create duplicate notifications.
+Each transition produces a deterministic event key and the database enforces uniqueness on `(user_id, event_key)`. Retries of the same event are therefore idempotent.
 
 ### Redis
 
