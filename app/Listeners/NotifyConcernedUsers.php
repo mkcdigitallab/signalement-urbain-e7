@@ -7,6 +7,7 @@ namespace App\Listeners;
 use App\Events\ReportStatusChanged;
 use App\Models\Notification;
 use App\Models\Report;
+use App\Services\Notifications\NotificationEventKey;
 
 final class NotifyConcernedUsers
 {
@@ -38,12 +39,7 @@ final class NotifyConcernedUsers
 
     private function eventKey(ReportStatusChanged $event): string
     {
-        return sprintf(
-            'report-status:%s:%s:%s',
-            $event->reportId,
-            $event->previousStatus,
-            $event->newStatus,
-        );
+        return (new NotificationEventKey())->for($event);
     }
 
     /**
