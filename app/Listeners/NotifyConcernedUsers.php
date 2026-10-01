@@ -20,12 +20,12 @@ final class NotifyConcernedUsers
             Notification::query()->firstOrCreate(
                 [
                     'user_id' => $recipientId,
+                    'event_key' => $this->eventKey($event),
+                ],
+                [
                     'notifiable_type' => Report::class,
                     'notifiable_id' => $report->id,
                     'type' => ReportStatusChanged::class,
-                    'data->status' => $event->newStatus,
-                ],
-                [
                     'data' => [
                         'report_id' => $report->id,
                         'from' => $event->previousStatus,
@@ -34,6 +34,16 @@ final class NotifyConcernedUsers
                 ],
             );
         }
+    }
+
+    private function eventKey(ReportStatusChanged $event): string
+    {
+        return sprintf(
+            'report-status:%s:%s:%s',
+            $event->reportId,
+            $event->previousStatus,
+            $event->newStatus,
+        );
     }
 
     /**
