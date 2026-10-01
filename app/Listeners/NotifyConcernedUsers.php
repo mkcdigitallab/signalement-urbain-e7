@@ -11,6 +11,10 @@ use App\Services\Notifications\NotificationEventKey;
 
 final class NotifyConcernedUsers
 {
+    public function __construct(
+        private readonly NotificationEventKey $eventKey,
+    ) {
+    }
     public function handle(ReportStatusChanged $event): void
     {
         $report = Report::query()
@@ -39,7 +43,7 @@ final class NotifyConcernedUsers
 
     private function eventKey(ReportStatusChanged $event): string
     {
-        return (new NotificationEventKey())->for($event);
+        return $this->eventKey->for($event);
     }
 
     /**
