@@ -6,7 +6,6 @@ namespace App\Services\Media;
 
 use App\Contracts\MediaStorage;
 use Illuminate\Http\UploadedFile;
-use Throwable;
 
 final class ReportMediaService
 {
@@ -17,19 +16,16 @@ final class ReportMediaService
 
     public function store(UploadedFile $file, string $reportId): string
     {
-        $path = $this->storage->store($file, 'reports/'.$reportId);
-
-        try {
-            return $path;
-        } catch (Throwable $exception) {
-            $this->storage->delete($path);
-
-            throw $exception;
-        }
+        return $this->storage->store($file, 'reports/'.$reportId);
     }
 
     public function temporaryUrl(string $path, int $minutes = 10): string
     {
         return $this->storage->temporaryUrl($path, $minutes);
+    }
+
+    public function delete(string $path): void
+    {
+        $this->storage->delete($path);
     }
 }
