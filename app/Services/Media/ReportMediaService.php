@@ -19,8 +19,10 @@ final class ReportMediaService
         return $this->storage->store($file, 'reports/'.$reportId);
     }
 
-    public function temporaryUrl(string $path, int $minutes = 10): string
+    public function temporaryUrl(string $path, ?int $minutes = null): string
     {
+        $minutes ??= (int) config('signalcivique.media.temporary_url_minutes', 10);
+
         return $this->storage->temporaryUrl($path, $minutes);
     }
 
